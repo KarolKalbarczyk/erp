@@ -1,0 +1,77 @@
+{% include 'base.html' %}
+
+
+<head>
+    <title>Flask app</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/border.css') }}">
+</head>
+
+
+<input type="text" id="searchbar"/>
+<button onclick="search()">Search</button>
+
+<hr>
+
+
+<ul>
+    {% for product in dtos %}
+    <div class="border">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Settings_app_icon.png/600px-Windows_Settings_app_icon.png"
+             width="80" height="80" onclick="showProduct({{product.id}})"/>
+        <div>
+            <div class="list-data">
+                {% trans %} Code {% endtrans %} {{ product.code }}
+            </div>
+            {% trans %} Name {% endtrans %}{{ product.name }}
+        </div>
+        <div style="margin-left:15px">
+            <div class="list-data">
+
+            </div>
+            {% trans %} Available {% endtrans %}{{ product.quantity }}
+        </div>
+        <button onclick="remove({{product.id}})" class="button">{% trans %} Remove {%endtrans %}
+        </button>
+    </div>
+    {% endfor %}
+
+    <div class="pageSelectRow">
+    {% if hasPrevPage %}
+         <a href="products?page={{pageNumber - 1}}"> <button> < </button> </a>
+    {% else %}
+        <div></div>
+    {% endif %}
+
+    {% trans %} page {% endtrans %}: {{ pageNumber }}
+    {% if hasNextPage %}
+         <a href="products?page={{pageNumber + 1}}"> <button> >  </button> </a>
+    {% else %}
+        <div></div>
+    {% endif %}
+    </div>
+
+</ul>
+
+<script>
+
+    function add(id){
+        document.getElementById(id+"button").disabled = true;
+        fetch("http://127.0.0.1:5000/addToOrder?productId=" + id, {
+          method: "POST"
+        }).then(res => {
+
+          console.log("Request complete! response:", res);
+        });
+    }
+
+    function search(){
+        value = document.getElementById("searchbar").value;
+        location.href = "http://127.0.0.1:5000/products?filter=" + value;
+    }
+
+    function showProduct(productId){
+        location.href = "http://127.0.0.1:5000/product?productId=" + productId;
+    }
+
+
+</script>
